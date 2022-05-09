@@ -2,7 +2,14 @@ import Notiflix from 'notiflix';
 
 const form = document.querySelector('form');
 
-let amount = 0;
+form.addEventListener('submit', formSubmit);
+form.addEventListener('input', formInput);
+
+let dataForm = {};
+
+function formInput(event) {
+  dataForm[event.target.name] = event.target.value;
+}
 
 function createPromise(position, delay) {
   return new Promise((resolve, reject) => {
@@ -13,4 +20,16 @@ function createPromise(position, delay) {
       reject(`❌ Rejected promise ${position} in ${delay}ms`);
     }
   });
+}
+
+function formSubmit(event) {
+  event.preventDefault();
+  let time = Number(dataForm.delay);
+  for (let i = 0; i < dataForm.amount; i += 1) {
+    setTimeout(() => {
+      createPromise(i + 1, time + i * Number(dataForm.step))
+        .then(message => Notiflix.Notify.success(message))
+        .catch(message => Notiflix.Notify.failure(message));
+    }, time + i * Number(dataForm.step));
+  }
 }
